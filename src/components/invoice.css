@@ -917,3 +917,56 @@ body.theme-dark .currency-option-sub {
     transform: rotate(360deg);
   }
 }
+/* grid with toggle column */
+.invoice-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) auto minmax(0, 1.2fr);
+  gap: 1.5rem;
+}
+
+/* when preview hidden, let form take more space and keep toggle */
+.invoice-grid-collapsed {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+/* toggle chevron between form and preview */
+.preview-toggle-btn {
+  align-self: center;
+  justify-self: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+}
+
+.preview-toggle-btn:hover {
+  background: #f3f4f6;
+}
+
+body.theme-dark .preview-toggle-btn {
+  background: #020617;
+  border-color: #374151;
+  color: #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+}
+
+/* responsive: stack, move toggle above preview on mobile */
+@media (max-width: 1024px) {
+  .invoice-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .invoice-grid-collapsed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .preview-toggle-btn {
+    justify-self: flex-end;
+  }
+}
