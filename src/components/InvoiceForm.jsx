@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import "../components/invoice.css";
 import CurrencySelect from "./CurrencySelect";
 
-const emptyItem = { description: "", quantity: 1, price: 0, tax: 0 };
+const emptyItem = {
+  particulars: "",
+  hsn: "",
+  qty: 1,
+  rate: 0,
+};
 
 const defaultForm = {
   clientName: "",
@@ -45,20 +50,15 @@ const InvoiceForm = ({ onChange }) => {
 
   const effectiveCurrency = form.currency || "INR";
 
-  // totals
+  const lineAmount = (item) =>
+    Number(item.qty || 0) * Number(item.rate || 0);
+
   const subtotal = form.items.reduce(
-    (sum, it) => sum + Number(it.quantity || 0) * Number(it.price || 0),
+    (sum, it) => sum + lineAmount(it),
     0
   );
-  const taxTotal = form.items.reduce(
-    (sum, it) =>
-      sum +
-      Number(it.quantity || 0) *
-        Number(it.price || 0) *
-        Number(it.tax || 0) /
-        100,
-    0
-  );
+
+  const taxTotal = 0; // no per-line tax now
 
   const coupon = form.hasCoupon ? Number(form.couponAmount || 0) : 0;
   const discount = form.hasDiscount ? Number(form.discountAmount || 0) : 0;
@@ -146,65 +146,100 @@ const InvoiceForm = ({ onChange }) => {
         />
       </div>
 
-      {/* Items */}
+      {/* Product table */}
       <h3 className="section-title" style={{ marginTop: "1.2rem" }}>
         Product
       </h3>
 
       <div className="items-card">
         <div className="items-header">
-          <span>Item</span>
+          <span>S.No</span>
+          <span>Particulars</span>
+          <span>HSN Code</span>
           <span>Qty</span>
-          <span>Unit price</span>
-          <span>Tax %</span>
+          <span>Rate</span>
+          <span>Amount</span>
           <span></span>
         </div>
 
-        {form.items.map((item, index) => (
-          <div className="items-row" key={index}>
-            <input
-              type="text"
-              placeholder="Item name"
-              value={item.description}
-              onChange={(e) =>
-                handleItemChange(index, "description", e.target.value)
-              }
-            />
-            <input
-              type="number"
-              min="1"
-              value={item.quantity}
-              onChange={(e) =>
-                handleItemChange(index, "quantity", e.target.value)
-              }
-            />
-            <input
-              type="number"
-              min="0"
-              value={item.price}
-              onChange={(e) =>
-                handleItemChange(index, "price", e.target.value)
-              }
-            />
-            <input
-              type="number"
-              min="0"
-              max="100"
-              value={item.tax}
-              onChange={(e) =>
-                handleItemChange(index, "tax", e.target.value)
-              }
-            />
-            <button
-              type="button"
-              className="remove-btn"
-              onClick={() => removeItem(index)}
-              aria-label="Remove item"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
+        {form.items.map((item, index) => {
+          const amount = lineAmount(item);
+
+          return (
+            <div className="items-row" key={index}>
+              {/* S.No */}
+              <span className="items-sno">{index + 1}</span>
+
+              {/* Particulars */}
+              <input
+                type="text"
+                placeholder="Product / service name"
+                value={item.particulars}
+                onChange={(e) =>
+                  handleItemChange(index, "particulars", e.target.value)
+                }
+              />
+
+              {/* HSN Code */}
+              <input
+                type="text"
+                placeholder="HSN / SAC"
+                value={item.hsn}
+                onChange={(e) =>
+                  handleItemChange(index, "hsn", e.target.value)
+                }
+              />
+
+              {/* Qty */}
+              <input
+                type="number"
+                min="1"
+                value={item.qty}
+                onChange={(e) =>
+                  handleItemChange(index, "qty", e.target.value)
+                }
+              />
+
+              {/* Rate */}
+              <input
+                type="number"
+                min="0"
+                value={item.rate}
+                onChange={(e) =>
+                  handleItemChange(index, "rate", e.target.value)
+                }
+              />
+
+              {/* Amount (read-only) */}
+              <span className="items-amount">
+                {effectiveCurrency} {amount.toFixed(2)}
+              </span>
+
+              {/* Remove button */}
+              <button
+                type="button"
+                className="remove-btn"
+                onClick={() => removeItem(index)}
+                aria-label="Remove item"
+              >
+                ✕
+              </button>
+            </div>
+          );
+        })}
+
+        {/* Total row at bottom */}
+        <div className="items-footer">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span className="items-footer-label">Total</span>
+          <span className="items-footer-amount">
+            {effectiveCurrency} {subtotal.toFixed(2)}
+          </span>
+          <span></span>
+        </div>
       </div>
 
       <button
@@ -303,12 +338,6 @@ const InvoiceForm = ({ onChange }) => {
             {effectiveCurrency} {subtotal.toFixed(2)}
           </span>
         </div>
-        <div className="totals-row">
-          <span>Tax</span>
-          <span>
-            {effectiveCurrency} {taxTotal.toFixed(2)}
-          </span>
-        </div>
         {coupon > 0 && (
           <div className="totals-row">
             <span>Coupon</span>
@@ -333,13 +362,13 @@ const InvoiceForm = ({ onChange }) => {
         </div>
       </div>
 
-      {/* Buttons same width */}
+      {/* Buttons */}
       <div className="form-actions">
         <button type="button" className="ghost-btn" onClick={handleCancel}>
           Cancel
         </button>
         <button type="submit" className="primary-btn">
-          Submit Invoice
+          Processing invoice
         </button>
       </div>
     </form>

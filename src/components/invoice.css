@@ -1,5 +1,5 @@
 /* =========================
-   GLOBAL + THEME
+   GLOBAL + THEMES
    ========================= */
 
 body {
@@ -8,7 +8,7 @@ body {
     sans-serif;
 }
 
-/* theme root */
+/* light/dark root */
 body.theme-light {
   background: #f3f4f6;
   color: #0f172a;
@@ -19,7 +19,7 @@ body.theme-dark {
   color: #e5e7eb;
 }
 
-/* invoice card and sections */
+/* card + sections */
 body.theme-light .invoice-card {
   background: #ffffff;
   border-radius: 24px;
@@ -43,7 +43,7 @@ body.theme-dark .preview-section {
   background: #020617;
 }
 
-/* inputs */
+/* inputs in dark */
 body.theme-dark input,
 body.theme-dark select,
 body.theme-dark textarea {
@@ -57,7 +57,7 @@ body.theme-dark textarea::placeholder {
   color: #6b7280;
 }
 
-/* preview card & tables in dark */
+/* preview + tables in dark */
 body.theme-dark .preview-inner,
 body.theme-dark .items-card,
 body.theme-dark .preview-table,
@@ -71,7 +71,7 @@ body.theme-dark .preview-table-head {
   background: #111827;
 }
 
-/* ===== DARK THEME TEXT FIXES ===== */
+/* ===== dark theme text fixes ===== */
 
 body.theme-dark {
   color: #e5e7eb;
@@ -218,7 +218,7 @@ body.theme-dark .theme-toggle-btn {
   color: #e5e7eb;
 }
 
-/* Layout grid: 40% form / 60% preview */
+/* Layout grid: form 40% / preview 60% */
 .invoice-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
@@ -232,17 +232,16 @@ body.theme-dark .theme-toggle-btn {
   padding: 1.25rem 1.5rem;
 }
 
-/* form side */
+/* =========================
+   FORM ELEMENTS
+   ========================= */
+
 .section-title {
   font-size: 1rem;
   font-weight: 600;
   color: #111827;
   margin-bottom: 1rem;
 }
-
-/* =========================
-   FORM ELEMENTS
-   ========================= */
 
 .field-row {
   display: grid;
@@ -282,19 +281,56 @@ textarea:focus {
   box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.3);
 }
 
-/* currency select */
+/* nicer date input with icon */
+input[type="date"] {
+  position: relative;
+  padding-right: 2.2rem;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='3' y='5' width='18' height='16' rx='2' ry='2' stroke='%239CA3AF' stroke-width='1.5'/%3E%3Cpath d='M8 3V7' stroke='%239CA3AF' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16 3V7' stroke='%239CA3AF' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M3 10H21' stroke='%239CA3AF' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 16px 16px;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+}
+
+input[type="date"]:hover {
+  border-color: #c7d2fe;
+}
+
+/* dark calendar icon */
+body.theme-dark input[type="date"] {
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='3' y='5' width='18' height='16' rx='2' ry='2' stroke='%23E5E7EB' stroke-width='1.5'/%3E%3Cpath d='M8 3V7' stroke='%23E5E7EB' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16 3V7' stroke='%23E5E7EB' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M3 10H21' stroke='%23E5E7EB' stroke-width='1.5'/%3E%3C/svg%3E");
+}
+
+/* currency select pill */
 .currency-select {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.6rem;
-  border-radius: 12px;
+  gap: 0.6rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
   border: 1px solid #e5e7eb;
   background: #ffffff;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
+}
+
+body.theme-dark .currency-select {
+  background: #020617;
+  border-color: #374151;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 }
 
 .currency-select-flag {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 999px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -302,9 +338,19 @@ textarea:focus {
 
 .currency-select-input {
   border: none;
-  padding: 0.3rem 0.2rem;
+  padding: 0;
   font-size: 0.85rem;
   background: transparent;
+  color: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #9ca3af 50%),
+    linear-gradient(135deg, #9ca3af 50%, transparent 50%);
+  background-position: calc(100% - 10px) 50%, calc(100% - 5px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 1.2rem;
 }
 
 .currency-select-input:focus {
@@ -312,7 +358,15 @@ textarea:focus {
   box-shadow: none;
 }
 
-/* Items table in form */
+body.theme-dark .currency-select-input {
+  background-image: linear-gradient(45deg, transparent 50%, #e5e7eb 50%),
+    linear-gradient(135deg, #e5e7eb 50%, transparent 50%);
+}
+
+/* =========================
+   PRODUCT TABLE (FORM)
+   ========================= */
+
 .items-card {
   margin-top: 1.2rem;
   border-radius: 14px;
@@ -324,7 +378,7 @@ textarea:focus {
 .items-header,
 .items-row {
   display: grid;
-  grid-template-columns: 3fr 1fr 1.5fr 1fr 40px;
+  grid-template-columns: 0.7fr 3fr 2fr 1fr 1.5fr 1.5fr 40px;
   gap: 0.5rem;
   align-items: center;
   padding: 0.55rem 0.9rem;
@@ -341,7 +395,37 @@ textarea:focus {
   background: #f9fafb;
 }
 
-/* buttons in table */
+.items-sno,
+.items-amount {
+  font-size: 0.8rem;
+  color: #111827;
+}
+
+/* footer total row */
+.items-footer {
+  display: grid;
+  grid-template-columns: 0.7fr 3fr 2fr 1fr 1.5fr 1.5fr 40px;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.55rem 0.9rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.items-footer-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: right;
+  color: #111827;
+}
+
+.items-footer-amount {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* remove button */
 .remove-btn {
   border: none;
   background: transparent;
@@ -375,7 +459,7 @@ textarea:focus {
   background: #e0e7ff;
 }
 
-/* Totals */
+/* Totals under form */
 .totals {
   margin-top: 1rem;
   display: flex;
@@ -395,7 +479,7 @@ textarea:focus {
   font-size: 0.95rem;
 }
 
-/* Primary + ghost buttons */
+/* buttons */
 .primary-btn {
   padding: 0.7rem 1.4rem;
   border-radius: 999px;
@@ -431,7 +515,7 @@ textarea:focus {
   border-color: #7c3aed;
 }
 
-/* equal-width actions at bottom of form */
+/* equal-width actions */
 .form-actions {
   display: flex;
   gap: 0.6rem;
@@ -448,7 +532,6 @@ textarea:focus {
    PREVIEW SIDE
    ========================= */
 
-/* preview section background */
 .preview-section {
   background: #f3f4ff;
 }
@@ -488,7 +571,7 @@ textarea:focus {
   font-size: 0.9rem;
 }
 
-/* main preview card */
+/* card */
 .preview-inner {
   border-radius: 16px;
   border: 1px solid #e5e7eb;
@@ -500,7 +583,7 @@ textarea:focus {
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
-/* top row */
+/* top */
 .preview-top {
   display: flex;
   justify-content: space-between;
@@ -561,7 +644,7 @@ textarea:focus {
   margin: 0.15rem 0 0;
 }
 
-/* items table in preview */
+/* items table */
 .preview-table {
   border-radius: 12px;
   border: 1px solid #e5e7eb;
@@ -657,8 +740,9 @@ textarea:focus {
   }
 
   .items-header,
-  .items-row {
-    grid-template-columns: 2.5fr 0.8fr 1.3fr 1fr 32px;
+  .items-row,
+  .items-footer {
+    grid-template-columns: 0.7fr 2.5fr 1.6fr 0.8fr 1.3fr 1.5fr 32px;
     padding: 0.45rem 0.6rem;
   }
 
