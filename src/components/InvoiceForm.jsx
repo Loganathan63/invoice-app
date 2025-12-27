@@ -368,7 +368,7 @@ const InvoiceForm = ({ onChange }) => {
           Cancel
         </button>
         <button type="submit" className="primary-btn">
-          Processing invoice
+          Submit
         </button>
       </div>
     </form>
