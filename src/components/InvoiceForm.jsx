@@ -1,3 +1,4 @@
+// src/components/InvoiceForm.jsx
 import React, { useState } from "react";
 import "../components/invoice.css";
 import CurrencySelect from "./CurrencySelect";
@@ -25,13 +26,14 @@ const defaultForm = {
   discountAmount: 0,
 };
 
-const InvoiceForm = ({ onChange }) => {
+const InvoiceForm = ({ onChange, onFinalize }) => {
   const [form, setForm] = useState(defaultForm);
+  const [isSending, setIsSending] = useState(false);
 
   const updateForm = (patch) => {
     const next = { ...form, ...patch };
     setForm(next);
-    if (onChange) onChange(next);
+    onChange?.(next);
   };
 
   const handleItemChange = (index, field, value) => {
@@ -58,31 +60,61 @@ const InvoiceForm = ({ onChange }) => {
     0
   );
 
-  const taxTotal = 0; // no per-line tax now
+  const taxTotal = 0;
 
   const coupon = form.hasCoupon ? Number(form.couponAmount || 0) : 0;
   const discount = form.hasDiscount ? Number(form.discountAmount || 0) : 0;
 
   const total = subtotal + taxTotal - coupon - discount;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (onChange) {
-      onChange({
-        ...form,
-        subtotal,
-        taxTotal,
-        coupon,
-        discount,
-        total,
-        currencyLabel: form.currencyLabel,
-      });
-    }
-  };
-
   const handleCancel = () => {
     setForm(defaultForm);
-    if (onChange) onChange(defaultForm);
+    setIsSending(false);
+    onChange?.(defaultForm);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      ...form,
+      subtotal,
+      taxTotal,
+      coupon,
+      discount,
+      total,
+    };
+
+    onChange?.(payload);
+
+    if (!form.clientEmail) {
+      alert("Please enter client email to send invoice.");
+      return;
+    }
+
+    try {
+      setIsSending(true);
+
+      // Call your backend email API here.
+      // Replace `/api/send-invoice` with your actual endpoint.
+      await fetch("/api/send-invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: form.clientEmail,
+          invoice: payload,
+        }),
+      });
+
+      onFinalize?.(); // e.g., increment invoice number in parent
+      // Optional success toast/message
+      // alert("Invoice sent!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send invoice. Please try again.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -167,10 +199,8 @@ const InvoiceForm = ({ onChange }) => {
 
           return (
             <div className="items-row" key={index}>
-              {/* S.No */}
               <span className="items-sno">{index + 1}</span>
 
-              {/* Particulars */}
               <input
                 type="text"
                 placeholder="Product / service name"
@@ -180,7 +210,6 @@ const InvoiceForm = ({ onChange }) => {
                 }
               />
 
-              {/* HSN Code */}
               <input
                 type="text"
                 placeholder="HSN / SAC"
@@ -190,7 +219,6 @@ const InvoiceForm = ({ onChange }) => {
                 }
               />
 
-              {/* Qty */}
               <input
                 type="number"
                 min="1"
@@ -200,7 +228,6 @@ const InvoiceForm = ({ onChange }) => {
                 }
               />
 
-              {/* Rate */}
               <input
                 type="number"
                 min="0"
@@ -210,12 +237,10 @@ const InvoiceForm = ({ onChange }) => {
                 }
               />
 
-              {/* Amount (read-only) */}
               <span className="items-amount">
                 {effectiveCurrency} {amount.toFixed(2)}
               </span>
 
-              {/* Remove button */}
               <button
                 type="button"
                 className="remove-btn"
@@ -228,7 +253,6 @@ const InvoiceForm = ({ onChange }) => {
           );
         })}
 
-        {/* Total row at bottom */}
         <div className="items-footer">
           <span></span>
           <span></span>
@@ -246,6 +270,7 @@ const InvoiceForm = ({ onChange }) => {
         type="button"
         className="add-item-btn"
         onClick={addItem}
+        disabled={isSending}
       >
         + Add new line
       </button>
@@ -364,11 +389,21 @@ const InvoiceForm = ({ onChange }) => {
 
       {/* Buttons */}
       <div className="form-actions">
-        <button type="button" className="ghost-btn" onClick={handleCancel}>
+        <button
+          type="button"
+          className="ghost-btn"
+          onClick={handleCancel}
+          disabled={isSending}
+        >
           Cancel
         </button>
-        <button type="submit" className="primary-btn">
-          Submit
+        <button
+          type="submit"
+          className={`primary-btn ${isSending ? "primary-btn-loading" : ""}`}
+          disabled={isSending}
+        >
+          {isSending && <span className="btn-spinner" />}
+          {isSending ? "Processing invoice" : "Send invoice"}
         </button>
       </div>
     </form>
